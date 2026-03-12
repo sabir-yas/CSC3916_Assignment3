@@ -70,3 +70,14 @@ Create a collection in MongoDB to hold information about movies
 - https://www.mongodb.com/cloud/atlas
 - Create a Free Subscription *Amazon
 - https://render.com/docs/deploy-create-react-app **important: Environment Variable for https://github.com/AliceNN-ucdenver/CSC3916_REACT env.REACT_APP_API_URL, this weekend I will look at changes (I believe only 1 change in the actions)
+
+## Testing and Execution (User Setup)
+The API logic, database routing, JSON Web Tokens schemas, and React front-end components have been completely built out.
+
+1. **Test Postman Collection**: Import `CSC3916_Assignment3.postman_collection.json` into your local Postman. Run the endpoints. Then click **Share > Embed**, and paste the markdown link below:
+   
+   *[Insert Postman Embed Code Here]*
+
+2. **Run Backend Code locally**: Execute `npm install` and `npm start` in this folder.
+3. **Run Frontend Code locally**: Execute `npm install` and `npm start` internally within `./CSC3916_REACT19`.
+4. **Deploy**: Push changes to GitHub and deploy to Render/Heroku as specified.

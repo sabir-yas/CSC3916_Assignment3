@@ -1,0 +1,264 @@
+{
+    "info": {
+        "_postman_id": "d04d13fa-233c-44af-aa6f-234b1509a25b",
+        "name": "CSC3916_Assignment3",
+        "description": "Postman collection for Homework 3 API Endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Signup User",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "exec": [
+                            "pm.environment.set(\"random_user\", \"user\" + _.random(1000, 9999));\r",
+                            "pm.environment.set(\"random_pwd\", \"pass\" + _.random(1000, 9999));"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Test User\",\n    \"username\": \"{{random_user}}\",\n    \"password\": \"{{random_pwd}}\"\n}"
+                },
+                "url": {
+                    "raw": "{{BASE_URL}}/signup",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "signup"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Signup User (Duplicate - Error)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Test User\",\n    \"username\": \"{{random_user}}\",\n    \"password\": \"{{random_pwd}}\"\n}"
+                },
+                "url": {
+                    "raw": "{{BASE_URL}}/signup",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "signup"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Signin User",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "var jsonData = pm.response.json();\r",
+                            "if (jsonData.token) {\r",
+                            "    pm.environment.set(\"jwt_token\", jsonData.token);\r",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\": \"{{random_user}}\",\n    \"password\": \"{{random_pwd}}\"\n}"
+                },
+                "url": {
+                    "raw": "{{BASE_URL}}/signin",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "signin"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Save a Movie",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "{{jwt_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"title\": \"Dune\",\n    \"releaseDate\": 2021,\n    \"genre\": \"Science Fiction\",\n    \"actors\": [\n        {\"actorName\": \"Timothee Chalamet\", \"characterName\": \"Paul Atreides\"}\n    ]\n}"
+                },
+                "url": {
+                    "raw": "{{BASE_URL}}/movies",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "movies"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Save a Movie (Missing fields - Error)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "{{jwt_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"title\": \"Dune 2\"\n}"
+                },
+                "url": {
+                    "raw": "{{BASE_URL}}/movies",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "movies"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get All Movies",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "{{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{BASE_URL}}/movies",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "movies"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get a Movie",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "{{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{BASE_URL}}/movies/Dune",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "movies",
+                        "Dune"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Update a Movie",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "{{jwt_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"releaseDate\": 2022\n}"
+                },
+                "url": {
+                    "raw": "{{BASE_URL}}/movies/Dune",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "movies",
+                        "Dune"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Delete a Movie",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "{{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{BASE_URL}}/movies/Dune",
+                    "host": [
+                        "{{BASE_URL}}"
+                    ],
+                    "path": [
+                        "movies",
+                        "Dune"
+                    ]
+                }
+            }
+        }
+    ]
+}
