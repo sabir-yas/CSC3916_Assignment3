@@ -5,6 +5,13 @@
         "description": "Postman collection for Homework 3 API Endpoints",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
+    "variable": [
+        {
+            "key": "BASE_URL",
+            "value": "https://csc3916-assignment3-vi9i.onrender.com",
+            "type": "string"
+        }
+    ],
     "item": [
         {
             "name": "Signup User",
@@ -13,8 +20,26 @@
                     "listen": "prerequest",
                     "script": {
                         "exec": [
-                            "pm.environment.set(\"random_user\", \"user\" + _.random(1000, 9999));\r",
+                            "pm.environment.set(\"random_user\", \"user\" + _.random(1000, 9999));",
                             "pm.environment.set(\"random_pwd\", \"pass\" + _.random(1000, 9999));"
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Signup succeeds (2xx status)\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response indicates success\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "});"
                         ],
                         "type": "text/javascript"
                     }
@@ -45,6 +70,26 @@
         },
         {
             "name": "Signup User (Duplicate - Error)",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Duplicate signup returns error status (4xx)\", function () {",
+                            "    pm.expect(pm.response.code).to.be.within(400, 499);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response indicates failure\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.success).to.eql(false);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
             "request": {
                 "method": "POST",
                 "header": [
@@ -75,9 +120,25 @@
                     "listen": "test",
                     "script": {
                         "exec": [
-                            "var jsonData = pm.response.json();\r",
-                            "if (jsonData.token) {\r",
-                            "    pm.environment.set(\"jwt_token\", jsonData.token);\r",
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response has token\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.token).to.be.a('string');",
+                            "});",
+                            "pm.test(\"Response has success true\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "});",
+                            "var jsonData = pm.response.json();",
+                            "if (jsonData.token) {",
+                            "    // Strip the 'JWT ' prefix the server adds before storing",
+                            "    var rawToken = jsonData.token.replace(/^JWT\\s+/i, '');",
+                            "    pm.environment.set(\"jwt_token\", rawToken);",
                             "}"
                         ],
                         "type": "text/javascript"
@@ -109,6 +170,26 @@
         },
         {
             "name": "Save a Movie",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Movie saved successfully (2xx status)\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response indicates success\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
             "request": {
                 "method": "POST",
                 "header": [
@@ -118,7 +199,7 @@
                     },
                     {
                         "key": "Authorization",
-                        "value": "{{jwt_token}}"
+                        "value": "jwt {{jwt_token}}"
                     }
                 ],
                 "body": {
@@ -138,6 +219,26 @@
         },
         {
             "name": "Save a Movie (Missing fields - Error)",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Missing fields returns error status (4xx)\", function () {",
+                            "    pm.expect(pm.response.code).to.be.within(400, 499);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response indicates failure\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.success).to.eql(false);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
             "request": {
                 "method": "POST",
                 "header": [
@@ -147,7 +248,7 @@
                     },
                     {
                         "key": "Authorization",
-                        "value": "{{jwt_token}}"
+                        "value": "jwt {{jwt_token}}"
                     }
                 ],
                 "body": {
@@ -167,12 +268,40 @@
         },
         {
             "name": "Get All Movies",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response is an array\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData).to.be.an('array');",
+                            "});",
+                            "pm.test(\"Movies have required fields\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    if (jsonData.length > 0) {",
+                            "        pm.expect(jsonData[0]).to.have.property('title');",
+                            "        pm.expect(jsonData[0]).to.have.property('genre');",
+                            "        pm.expect(jsonData[0]).to.have.property('actors');",
+                            "    }",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
             "request": {
                 "method": "GET",
                 "header": [
                     {
                         "key": "Authorization",
-                        "value": "{{jwt_token}}"
+                        "value": "jwt {{jwt_token}}"
                     }
                 ],
                 "url": {
@@ -188,12 +317,40 @@
         },
         {
             "name": "Get a Movie",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response has correct title\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.title).to.eql('Dune');",
+                            "});",
+                            "pm.test(\"Response has actors array\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.actors).to.be.an('array');",
+                            "});",
+                            "pm.test(\"Response has genre\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.genre).to.be.a('string');",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
             "request": {
                 "method": "GET",
                 "header": [
                     {
                         "key": "Authorization",
-                        "value": "{{jwt_token}}"
+                        "value": "jwt {{jwt_token}}"
                     }
                 ],
                 "url": {
@@ -210,6 +367,30 @@
         },
         {
             "name": "Update a Movie",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response indicates success\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "});",
+                            "pm.test(\"Movie releaseDate was updated\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.movie.releaseDate).to.eql(2022);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
             "request": {
                 "method": "PUT",
                 "header": [
@@ -219,7 +400,7 @@
                     },
                     {
                         "key": "Authorization",
-                        "value": "{{jwt_token}}"
+                        "value": "jwt {{jwt_token}}"
                     }
                 ],
                 "body": {
@@ -240,12 +421,36 @@
         },
         {
             "name": "Delete a Movie",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "pm.test(\"Response body is valid JSON\", function () {",
+                            "    pm.response.to.be.json;",
+                            "});",
+                            "pm.test(\"Response indicates success\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "});",
+                            "pm.test(\"Response has success message\", function () {",
+                            "    var jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.be.a('string');",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
             "request": {
                 "method": "DELETE",
                 "header": [
                     {
                         "key": "Authorization",
-                        "value": "{{jwt_token}}"
+                        "value": "jwt {{jwt_token}}"
                     }
                 ],
                 "url": {
